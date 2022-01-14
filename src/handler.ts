@@ -1,15 +1,23 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type {
-  ImageFormat,
-  SanityClientLike,
-} from '@sanity/image-url/lib/types/types';
-import augment, { getImageURL } from './augment.js';
+import type { ImageFormat, SanityClient } from './types.js';
+import { getImageURL } from './augment.js';
 import { arToHeight } from './helpers.js';
 
 type QueryParam = string | string[];
 type FocalPoint = [number, number];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+type HandlerContext = {
+  sanityClient: SanityClient;
+  validAspects: any[];
+  validFormats: any[];
+};
+
+export default function handler(
+  this: HandlerContext,
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const { sanityClient } = this;
   let { id, w, ar, fpX, fpY, fm } = req.query;
 
   let width: number;
@@ -20,7 +28,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    assertValidAspect(ar);
+    assertValidAspect(this.validAspects, ar);
   } catch (error) {
     return res.status(400).send((error as Error).message);
   }
@@ -33,7 +41,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    assertValidFormat(fm);
+    assertValidFormat(this.validFormats, fm);
   } catch (error) {
     return res.status(400).send((error as Error).message);
   }
@@ -42,7 +50,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).send('invalid id');
   }
 
-  let builder = getImageURL(id)
+  let builder = getImageURL(sanityClient, id)
     .format(fm)
     .width(width)
     .fit('crop')
@@ -66,30 +74,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   });
 }
 
-let validAspects: any[];
-let validFormats: any[];
-
-type SetConfigParams = {
-  sanityClient: SanityClientLike;
-  validAspects: typeof validAspects;
-  validFormats: typeof validFormats;
-};
-
-handler.setConfig = ({
-  sanityClient,
-  validAspects: newValidAspects,
-  validFormats: newValidFormats,
-}: SetConfigParams) => {
-  augment.setConfig({ sanityClient });
-  validAspects = newValidAspects;
-  validFormats = newValidFormats;
-};
-
-function assertValidAspect(ar: QueryParam): asserts ar is string {
+function assertValidAspect(
+  validAspects: any[],
+  ar: QueryParam,
+): asserts ar is string {
   if (!validAspects.includes(ar)) throw new Error('invalid aspect ratio');
 }
 
-function assertValidFormat(fm: QueryParam): asserts fm is ImageFormat {
+function assertValidFormat(
+  validFormats: any[],
+  fm: QueryParam,
+): asserts fm is ImageFormat {
   if (!validFormats.includes(fm)) throw new Error('invalid format');
 }
 

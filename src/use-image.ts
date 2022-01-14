@@ -1,4 +1,4 @@
-import type { ImageSource } from './index.js';
+import type { ImageSource } from './types.js';
 import { useEffect, useRef } from 'react';
 import { arToHeight } from './helpers.js';
 import { devicePixelRatios, safeParams, formatSizes } from './helpers.js';

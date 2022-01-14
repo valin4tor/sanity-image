@@ -1,45 +1,45 @@
-import type { SanityClientLike } from '@sanity/image-url/lib/types/types';
-import type { ImageSource } from './index.js';
+import type { SanityClient } from './types.js';
+import type { ImageSource } from './types.js';
 // @ts-ignore: missing type definitions
 import { ImagePool } from '@squoosh/lib';
 import { arToHeight } from './helpers.js';
 import fetch from 'isomorphic-unfetch';
 import imageUrlBuilder from '@sanity/image-url';
 
+type AugmentContext = {
+  sanityClient: SanityClient;
+};
+
 export default async function augment(
+  this: AugmentContext,
   source: ImageSource,
   aspects: (string | undefined)[],
 ) {
+  const { sanityClient } = this;
   const imagePool: ImagePool = new ImagePool();
 
   const entries = aspects.map(async (ar) => {
-    return [ar, await getBase64(imagePool, source, ar)];
+    return [ar, await getBase64(sanityClient, imagePool, source, ar)];
   });
   source.base64 = Object.fromEntries(await Promise.all(entries));
 
   await imagePool.close();
 }
 
-let sanityClient: SanityClientLike;
-
-type SetConfigParams = {
-  sanityClient: typeof sanityClient;
-};
-
-augment.setConfig = ({ sanityClient: newClient }: SetConfigParams) => {
-  sanityClient = newClient;
-};
-
-export function getImageURL(source: ImageSource | string) {
+export function getImageURL(
+  sanityClient: SanityClient,
+  source: ImageSource | string,
+) {
   return imageUrlBuilder(sanityClient).image(source);
 }
 
 async function getBase64(
+  sanityClient: SanityClient,
   imagePool: ImagePool,
   source: ImageSource,
   ar: string | undefined,
 ) {
-  let builder = getImageURL(source).width(64);
+  let builder = getImageURL(sanityClient, source).width(64);
   if (ar) builder = builder.height(arToHeight(ar, 64));
   const response = await fetch(builder.url());
 
