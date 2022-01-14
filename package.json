@@ -29,6 +29,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "clean": "rm -rf lib",
     "lint": "prettier -c lib"
   },
   "dependencies": {
