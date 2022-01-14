@@ -30,7 +30,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf lib",
-    "lint": "prettier -c lib"
+    "lint": "prettier -c src"
   },
   "dependencies": {
     "@sanity/image-url": "^1.0.1",
