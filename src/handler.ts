@@ -71,13 +71,12 @@ type SetConfigParams = {
   validFormats: typeof validFormats;
 };
 
-handler.withConfig = ({
+handler.setConfig = ({
   validAspects: newValidAspects,
   validFormats: newValidFormats,
 }: SetConfigParams) => {
   validAspects = newValidAspects;
   validFormats = newValidFormats;
-  return handler;
 };
 
 function assertValidAspect(ar: QueryParam): asserts ar is string {
