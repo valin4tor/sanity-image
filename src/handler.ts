@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import type { ImageFormat } from '@sanity/image-url/lib/types/types';
-import { getImageURL } from './augment.js';
+import type {
+  ImageFormat,
+  SanityClientLike,
+} from '@sanity/image-url/lib/types/types';
+import augment, { getImageURL } from './augment.js';
 import { arToHeight } from './helpers.js';
 
 type QueryParam = string | string[];
@@ -67,14 +70,17 @@ let validAspects: any[];
 let validFormats: any[];
 
 type SetConfigParams = {
+  sanityClient: SanityClientLike;
   validAspects: typeof validAspects;
   validFormats: typeof validFormats;
 };
 
 handler.setConfig = ({
+  sanityClient,
   validAspects: newValidAspects,
   validFormats: newValidFormats,
 }: SetConfigParams) => {
+  augment.setConfig({ sanityClient });
   validAspects = newValidAspects;
   validFormats = newValidFormats;
 };
