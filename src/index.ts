@@ -1,3 +1,5 @@
+import groq from 'groq';
+
 export type ImageSource = {
   _id: string;
   altText: string;
@@ -6,6 +8,11 @@ export type ImageSource = {
   width: number;
   height: number;
 };
+
+export const IMG_SOURCE = groq`
+  hotspot,
+  ...asset-> { _id, altText, ...metadata.dimensions { width, height } }
+`;
 
 import augment from './augment.js';
 import handler from './handler.js';
