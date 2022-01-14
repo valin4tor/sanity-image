@@ -14,7 +14,11 @@ export default async function augment(
 
 let sanityClient: SanityClientLike;
 
-augment.setClient = (newClient: SanityClientLike) => {
+type SetConfigParams = {
+  sanityClient: typeof sanityClient;
+};
+
+augment.setConfig = ({ sanityClient: newClient }: SetConfigParams) => {
   sanityClient = newClient;
 };
 
