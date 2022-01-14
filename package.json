@@ -1,6 +1,6 @@
 {
   "name": "@valerie-makes/sanity-image",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Tools for Sanity Images",
   "keywords": [
     "sanity",
@@ -28,14 +28,14 @@
     "use-image.d.ts"
   ],
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf lib",
-    "lint": "prettier -c src"
+    "lint": "prettier -c src",
+    "build": "rm -rf lib && tsc",
+    "prepublishOnly": "npm run lint && npm run build"
   },
   "dependencies": {
     "@sanity/image-url": "^1.0.1",
-    "plaiceholder": "^2.2.0",
-    "sharp": "^0.29.3"
+    "@squoosh/lib": "^0.4.0",
+    "isomorphic-unfetch": "^3.1.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.38",
