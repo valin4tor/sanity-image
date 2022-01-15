@@ -63,6 +63,7 @@ export async function _middleware(
   }
 
   const response = await fetch(builder.url());
+  const body = new Uint8Array(await response.arrayBuffer());
   const contentType = response.headers.get('content-type');
   const cacheControl = response.headers.get('cache-control');
 
@@ -70,7 +71,7 @@ export async function _middleware(
   if (contentType) headers.set('content-type', contentType);
   if (cacheControl) headers.set('cache-control', cacheControl);
 
-  return new Response(response.body, { headers });
+  return new Response(body, { headers });
 }
 
 function assertValidFormat(
