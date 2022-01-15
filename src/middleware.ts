@@ -63,13 +63,14 @@ export async function _middleware(
   }
 
   const response = await fetch(builder.url());
+  const contentType = response.headers.get('content-type');
+  const cacheControl = response.headers.get('cache-control');
 
-  for (const [key, val] of response.headers.entries()) {
-    if (!['content-type', 'cache-control'].includes(key))
-      response.headers.delete(key);
-  }
+  const headers = new Headers();
+  if (contentType) headers.set('content-type', contentType);
+  if (cacheControl) headers.set('cache-control', cacheControl);
 
-  return response;
+  return new Response(response.body, { headers });
 }
 
 function assertValidFormat(
