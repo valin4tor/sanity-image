@@ -8,7 +8,7 @@ type MiddlewareContext = {
   validAspects: (string | null)[];
 };
 
-export function _middleware(
+export async function _middleware(
   this: MiddlewareContext,
   req: NextRequest,
   ev: NextFetchEvent,
@@ -62,7 +62,14 @@ export function _middleware(
     builder = builder.height(arToHeight(ar, width));
   }
 
-  return fetch(builder.url());
+  const response = await fetch(builder.url());
+
+  for (const [key, val] of response.headers.entries()) {
+    if (!['content-type', 'cache-control'].includes(key))
+      response.headers.delete(key);
+  }
+
+  return response;
 }
 
 function assertValidFormat(
