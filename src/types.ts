@@ -7,7 +7,10 @@ export type ImageSource = {
   height: number;
 };
 
-export type {
-  ImageFormat,
-  SanityClientLike as SanityClient,
-} from '@sanity/image-url/lib/types/types';
+export type SanityConfig = {
+  projectId: string;
+  dataset: string;
+};
+
+export type ImageFormat = 'jpg' | 'webp';
+export type FocalPoint = [number, number];

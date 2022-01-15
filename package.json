@@ -1,6 +1,6 @@
 {
   "name": "@valerie-makes/sanity-image",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "Tools for Sanity Images",
   "keywords": [
     "sanity",
@@ -23,9 +23,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
-    "lib",
-    "use-image.js",
-    "use-image.d.ts"
+    "lib"
   ],
   "scripts": {
     "lint": "prettier -c src",

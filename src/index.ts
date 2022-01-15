@@ -5,8 +5,7 @@ export const IMG_SOURCE = groq`
   ...asset-> { _id, altText, ...metadata.dimensions { width, height } }
 `;
 
-import _augment from './augment.js';
-import _handler from './handler.js';
-export { _augment, _handler };
-
-export type { ImageSource } from './types.js';
+export { _useImage } from './use-image.js';
+export { _augment } from './augment.js';
+export { _middleware } from './middleware.js';
+export type { ImageSource, SanityConfig } from './types.js';

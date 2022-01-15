@@ -1,7 +1,16 @@
 import type { ImageSource } from './types.js';
 import { useEffect, useRef } from 'react';
-import { arToHeight } from './helpers.js';
-import { devicePixelRatios, safeParams, formatSizes } from './helpers.js';
+
+import {
+  arToHeight,
+  devicePixelRatios,
+  safeParams,
+  formatSizes,
+} from './helpers.js';
+
+type UseImageContext = {
+  breakpoints: Record<string, string>;
+};
 
 type UseImageParams = {
   sizes: string;
@@ -9,7 +18,11 @@ type UseImageParams = {
   ar?: string;
 };
 
-export default function useImage({ source, sizes, ar }: UseImageParams) {
+export function _useImage(
+  this: UseImageContext,
+  { source, sizes, ar }: UseImageParams,
+) {
+  const { breakpoints } = this;
   const { _id, altText } = source;
   const base64 = source.base64[ar ?? 'undefined'];
 
@@ -67,13 +80,3 @@ export default function useImage({ source, sizes, ar }: UseImageParams) {
 
   return { base64, webps, jpegs, imageRef, defaultSrc, altText, width, height };
 }
-
-let breakpoints: Record<string, string>;
-
-type SetConfigParams = {
-  breakpoints: typeof breakpoints;
-};
-
-useImage.setConfig = ({ breakpoints: newBreakpoints }: SetConfigParams) => {
-  breakpoints = newBreakpoints;
-};
