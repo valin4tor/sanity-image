@@ -7,7 +7,7 @@ export type ImageSource = {
   height: number;
 };
 
-export {
+export type {
   ImageFormat,
   SanityClientLike as SanityClient,
 } from '@sanity/image-url/lib/types/types';

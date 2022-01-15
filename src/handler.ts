@@ -30,20 +30,20 @@ export default function handler(
   try {
     assertValidAspect(this.validAspects, ar);
   } catch (error) {
-    return res.status(400).send((error as Error).message);
+    return res.status(400).send(error as string);
   }
 
   let focalPoint: FocalPoint;
   try {
     focalPoint = getFocalPoint(fpX, fpY);
   } catch (error) {
-    return res.status(400).send((error as Error).message);
+    return res.status(400).send(error as string);
   }
 
   try {
     assertValidFormat(this.validFormats, fm);
   } catch (error) {
-    return res.status(400).send((error as Error).message);
+    return res.status(400).send(error as string);
   }
 
   if (typeof id !== 'string') {
@@ -54,14 +54,11 @@ export default function handler(
     .format(fm)
     .width(width)
     .fit('crop')
-    .crop('focalpoint');
+    .crop('focalpoint')
+    .focalPoint(...focalPoint);
 
   if (ar) {
     builder = builder.height(arToHeight(ar, width));
-  }
-
-  if (fpX && fpY) {
-    builder = builder.focalPoint(...focalPoint);
   }
 
   return fetch(builder.url()).then((image) => {
@@ -78,14 +75,14 @@ function assertValidAspect(
   validAspects: any[],
   ar: QueryParam,
 ): asserts ar is string {
-  if (!validAspects.includes(ar)) throw new Error('invalid aspect ratio');
+  if (!validAspects.includes(ar)) throw 'invalid aspect ratio';
 }
 
 function assertValidFormat(
   validFormats: any[],
   fm: QueryParam,
 ): asserts fm is ImageFormat {
-  if (!validFormats.includes(fm)) throw new Error('invalid format');
+  if (!validFormats.includes(fm)) throw 'invalid format';
 }
 
 function getFocalPoint(fpX: QueryParam, fpY: QueryParam): FocalPoint {
@@ -95,7 +92,7 @@ function getFocalPoint(fpX: QueryParam, fpY: QueryParam): FocalPoint {
 
   const validFP = /^0\.[0-9]+$/;
   if (![fpX, fpY].every((fp) => typeof fp === 'string' && fp.match(validFP))) {
-    throw new Error('invalid focal point');
+    throw 'invalid focal point';
   }
 
   return [parseFloat(fpX as string), parseFloat(fpY as string)];
