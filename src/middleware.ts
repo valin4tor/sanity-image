@@ -1,5 +1,6 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import type { ImageFormat, FocalPoint, SanityConfig } from './types.js';
+import { NextResponse } from 'next/server';
 import { arToHeight } from './helpers.js';
 import imageUrlBuilder from '@sanity/image-url';
 
@@ -8,7 +9,7 @@ type MiddlewareContext = {
   validAspects: (string | null)[];
 };
 
-export async function _middleware(
+export function _middleware(
   this: MiddlewareContext,
   req: NextRequest,
   ev: NextFetchEvent,
@@ -62,16 +63,7 @@ export async function _middleware(
     builder = builder.height(arToHeight(ar, width));
   }
 
-  const response = await fetch(builder.url());
-  const body = new Uint8Array(await response.arrayBuffer());
-  const contentType = response.headers.get('content-type');
-  const cacheControl = response.headers.get('cache-control');
-
-  const headers = new Headers();
-  if (contentType) headers.set('content-type', contentType);
-  if (cacheControl) headers.set('cache-control', cacheControl);
-
-  return new Response(body, { headers });
+  return NextResponse.rewrite(builder.url());
 }
 
 function assertValidFormat(
