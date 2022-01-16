@@ -23,7 +23,7 @@ export function _useImage(
   { source, sizes, ar }: UseImageParams,
 ) {
   const { breakpoints } = this;
-  const { _id, altText } = source;
+  const { _id, altText: alt } = source;
   const base64 = source.base64[ar ?? 'null'];
 
   const hotspot = source.hotspot ?? {};
@@ -38,7 +38,7 @@ export function _useImage(
 
   const params = safeParams({ w: defaultWidth, ar, fpX, fpY, fm: 'jpg' });
   const baseSrc = `/api/image/${_id}`;
-  const defaultSrc = `${baseSrc}?${params}`;
+  const src = `${baseSrc}?${params}`;
 
   const jpegs = widths
     .map((width) => {
@@ -58,9 +58,9 @@ export function _useImage(
   const width = source.width;
   const height = ar ? arToHeight(ar, width) : source.height;
 
-  const imageRef = useRef<HTMLImageElement>(null);
+  const ref = useRef<HTMLImageElement>(null);
   useEffect(() => {
-    const image = imageRef.current!;
+    const image = ref.current!;
     if (image.complete) return; // skip loaded images
 
     image.style.opacity = '0';
@@ -78,5 +78,5 @@ export function _useImage(
     };
   }, []);
 
-  return { base64, webps, jpegs, imageRef, defaultSrc, altText, width, height };
+  return { base64, webps, jpegs, ref, src, alt, width, height };
 }
