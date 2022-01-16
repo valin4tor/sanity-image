@@ -1,12 +1,10 @@
-import type { NextFetchEvent, NextRequest } from 'next/server';
+import type { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
 import type { ImageFormat, FocalPoint, SanityConfig } from './types.js';
 import { arToHeight } from './helpers.js';
 import imageUrlBuilder from '@sanity/image-url';
 
-import NextServer from 'next/server.js';
-const { NextResponse } = NextServer;
-
 type MiddlewareContext = {
+  NextResponse: typeof NextResponse;
   sanityConfig: SanityConfig;
   validAspects: (string | null)[];
 };
@@ -16,7 +14,7 @@ export function _middleware(
   req: NextRequest,
   ev: NextFetchEvent,
 ) {
-  const { sanityConfig, validAspects } = this;
+  const { NextResponse, sanityConfig, validAspects } = this;
   const { pathname, searchParams } = req.nextUrl;
 
   const w = searchParams.get('w');
