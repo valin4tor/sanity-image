@@ -1,8 +1,10 @@
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import type { ImageFormat, FocalPoint, SanityConfig } from './types.js';
-import { NextResponse } from 'next/server';
 import { arToHeight } from './helpers.js';
 import imageUrlBuilder from '@sanity/image-url';
+
+import NextServer from 'next/server.js';
+const { NextResponse } = NextServer;
 
 type MiddlewareContext = {
   sanityConfig: SanityConfig;
