@@ -24,7 +24,7 @@ export function _useImage(
 ) {
   const { breakpoints } = this;
   const { _id, altText } = source;
-  const base64 = source.base64[ar ?? 'undefined'];
+  const base64 = source.base64[ar ?? 'null'];
 
   const hotspot = source.hotspot ?? {};
   const [fpX, fpY] = [hotspot.x, hotspot.y];

@@ -11,7 +11,7 @@ type AugmentContext = {
 export async function _augment(
   this: AugmentContext,
   source: ImageSource,
-  aspects: (string | undefined)[],
+  aspects: (string | null)[],
 ) {
   const { sanityConfig } = this;
   const entries = aspects.map(async (ar) => {
@@ -23,7 +23,7 @@ export async function _augment(
 async function getBase64(
   sanityConfig: SanityConfig,
   source: ImageSource,
-  ar: string | undefined,
+  ar: string | null,
 ) {
   let builder = imageUrlBuilder(sanityConfig)
     .image(source)
