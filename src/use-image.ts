@@ -1,12 +1,6 @@
 import type { ImageSource } from './types.js';
+import { arToHeight } from './helpers.js';
 import { useEffect, useRef } from 'react';
-
-import {
-  arToHeight,
-  devicePixelRatios,
-  safeParams,
-  formatSizes,
-} from './helpers.js';
 
 type UseImageContext = {
   breakpoints: Record<string, string>;
@@ -26,8 +20,8 @@ export function _useImage(
   const { _id, altText: alt } = source;
   const base64 = source.base64[ar ?? 'null'];
 
-  const hotspot = source.hotspot ?? {};
-  const [fpX, fpY] = [hotspot.x, hotspot.y];
+  const { x: fpX, y: fpY } = source.hotspot ?? {};
+  const fp = source.hotspot && `${fpX},${fpY}`;
 
   const baseWidths = sizes
     .split(' ')
@@ -36,20 +30,20 @@ export function _useImage(
   const defaultWidth = Math.max(...baseWidths);
   const widths = devicePixelRatios(baseWidths);
 
-  const params = safeParams({ w: defaultWidth, ar, fpX, fpY, fm: 'jpg' });
+  const params = createParams({ w: defaultWidth, ar, fp, fm: 'jpg' });
   const baseSrc = `/api/image/${_id}`;
   const src = `${baseSrc}?${params}`;
 
   const jpegs = widths
     .map((width) => {
-      const params = safeParams({ w: width, ar, fpX, fpY, fm: 'jpg' });
+      const params = createParams({ w: width, ar, fp, fm: 'jpg' });
       return `${baseSrc}?${params} ${width}w`;
     })
     .join(', ');
 
   const webps = widths
     .map((width) => {
-      const params = safeParams({ w: width, ar, fpX, fpY, fm: 'webp' });
+      const params = createParams({ w: width, ar, fp, fm: 'webp' });
       return `${baseSrc}?${params} ${width}w`;
     })
     .join(', ');
@@ -79,4 +73,35 @@ export function _useImage(
   }, []);
 
   return { base64, webps, jpegs, ref, src, alt, width, height };
+}
+
+type EndpointParams = {
+  w: number;
+  fm: string;
+  ar?: string;
+  fp?: string;
+};
+
+function createParams(params: EndpointParams) {
+  const newParams = Object.fromEntries(
+    Object.entries(params)
+      .filter(([, val]) => val)
+      .map(([key, val]) => [key, val.toString()]),
+  );
+  return new URLSearchParams(newParams);
+}
+
+function devicePixelRatios(widths: number[]) {
+  widths = widths
+    .flatMap((w) => [w * 1, w * 1.5, w * 2, w * 3])
+    .map((w) => Math.ceil(w)); // round up
+  return [...new Set(widths)]; // unique
+}
+
+function formatSizes(sizes: string, breakpoints: Record<string, string>) {
+  const formatted = sizes.split(' ').map((size) => {
+    const [, key, val] = size.match(/(?:([a-z0-9]+):)?([0-9]+px)/)!;
+    return key ? `(min-width: ${breakpoints[key]}) ${val}` : val;
+  });
+  return formatted.reverse().join(', ');
 }
