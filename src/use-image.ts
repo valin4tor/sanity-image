@@ -7,14 +7,14 @@ type UseImageContext = {
 };
 
 type UseImageParams = {
-  sizes: string;
+  twSizes: string;
   source: ImageSource;
   ar?: string;
 };
 
 export function _useImage(
   this: UseImageContext,
-  { source, sizes, ar }: UseImageParams,
+  { source, twSizes, ar }: UseImageParams,
 ) {
   const { breakpoints } = this;
   const { _id, altText: alt } = source;
@@ -23,7 +23,7 @@ export function _useImage(
   const { x: fpX, y: fpY } = source.hotspot ?? {};
   const fp = source.hotspot && `${fpX},${fpY}`;
 
-  const baseWidths = sizes
+  const baseWidths = twSizes
     .split(' ')
     .map((s) => s.match(/([0-9]+)px/)![1])
     .map((width) => parseInt(width));
@@ -48,7 +48,7 @@ export function _useImage(
     })
     .join(', ');
 
-  sizes = formatSizes(sizes, breakpoints);
+  const sizes = formatSizes(twSizes, breakpoints);
   const width = source.width;
   const height = ar ? arToHeight(ar, width) : source.height;
 
@@ -72,7 +72,7 @@ export function _useImage(
     };
   }, []);
 
-  return { base64, webps, jpegs, ref, src, alt, width, height };
+  return { base64, webps, jpegs, sizes, ref, src, alt, width, height };
 }
 
 type EndpointParams = {
