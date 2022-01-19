@@ -7,15 +7,17 @@ type FetchImageContext = {
   validAspects: (string | null)[];
 };
 
-export function _fetchImage(this: FetchImageContext, url: URL) {
+export function _fetchImage(
+  this: FetchImageContext,
+  imageID: string,
+  params: URLSearchParams,
+) {
   const { sanityConfig, validAspects } = this;
-  const { pathname, searchParams } = url;
-  const image = pathname.split('/').pop()!;
 
-  const w = searchParams.get('w');
-  const ar = searchParams.get('ar');
-  const fm = searchParams.get('fm');
-  const fp = searchParams.get('fp');
+  const w = params.get('w');
+  const ar = params.get('ar');
+  const fm = params.get('fm');
+  const fp = params.get('fp');
 
   let width: number;
   if (w == null || !w.match(/^[0-9]+$/)) {
@@ -46,7 +48,7 @@ export function _fetchImage(this: FetchImageContext, url: URL) {
   }
 
   let builder = imageUrlBuilder(sanityConfig)
-    .image(image)
+    .image(imageID)
     .format(fm)
     .width(width)
     .fit('crop')
