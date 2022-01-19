@@ -3,6 +3,7 @@ import { arToHeight } from './helpers.js';
 import { useEffect, useRef } from 'react';
 
 type UseImageContext = {
+  endpoint: string;
   breakpoints: Record<string, string>;
 };
 
@@ -16,7 +17,7 @@ export function _useImage(
   this: UseImageContext,
   { source, twSizes, ar }: UseImageParams,
 ) {
-  const { breakpoints } = this;
+  const { endpoint, breakpoints } = this;
   const { _id, altText: alt } = source;
   const base64 = source.base64[ar ?? 'null'];
 
@@ -31,7 +32,7 @@ export function _useImage(
   const widths = devicePixelRatios(baseWidths);
 
   const params = createParams({ w: defaultWidth, ar, fp, fm: 'jpg' });
-  const baseSrc = `/api/image/${_id}`;
+  const baseSrc = `${endpoint}/${_id}`;
   const src = `${baseSrc}?${params}`;
 
   const jpegs = widths
