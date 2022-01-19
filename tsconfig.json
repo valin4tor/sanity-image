@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "strict": true,
+    "noEmit": true,
     "target": "ES2019",
     "module": "ESNext",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "declaration": true,
-    "outDir": "./lib",
     "lib": ["ES2019", "DOM"]
   },
   "include": ["src"]
