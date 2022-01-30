@@ -7,7 +7,7 @@ type FetchImageContext = {
   validAspects: (string | null)[];
 };
 
-export function _fetchImage(
+export async function _fetchImage(
   this: FetchImageContext,
   imageID: string,
   params: URLSearchParams,
@@ -59,7 +59,17 @@ export function _fetchImage(
     builder = builder.height(arToHeight(ar, width));
   }
 
-  return fetch(builder.url());
+  const response = await fetch(builder.url());
+  const headers = [...response.headers.keys()];
+  const allowedHeaders = ['content-type', 'cache-control'];
+
+  for (const key of headers) {
+    if (!allowedHeaders.includes(key)) {
+      response.headers.delete(key);
+    }
+  }
+
+  return response;
 }
 
 function assertValidFormat(
