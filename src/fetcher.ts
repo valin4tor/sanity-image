@@ -7,7 +7,7 @@ type FetchImageContext = {
   validAspects: (string | null)[];
 };
 
-export async function _fetchImage(
+export function _getImageUrl(
   this: FetchImageContext,
   imageID: string,
   params: URLSearchParams,
@@ -21,32 +21,22 @@ export async function _fetchImage(
 
   let width: number;
   if (w == null || !w.match(/^[0-9]+$/)) {
-    return new Response('invalid width', { status: 400 });
+    throw TypeError('invalid width');
   } else {
     width = parseInt(w);
   }
 
   if (width > 6400) {
-    return new Response('invalid width', { status: 400 });
+    throw TypeError('invalid width');
   }
 
   if (!validAspects.includes(ar)) {
-    return new Response('invalid aspect ratio', { status: 400 });
+    throw TypeError('invalid aspect ratio');
   }
 
-  try {
-    assertValidFormat(['jpg', 'webp'], fm);
-  } catch (error) {
-    return new Response(error as string, { status: 400 });
-  }
+  assertValidFormat(['jpg', 'webp'], fm);
 
-  let focalPoint: FocalPoint;
-  try {
-    focalPoint = getFocalPoint(fp);
-  } catch (error) {
-    return new Response(error as string, { status: 400 });
-  }
-
+  const focalPoint = getFocalPoint(fp);
   let builder = imageUrlBuilder(sanityConfig)
     .image(imageID)
     .format(fm)
@@ -59,17 +49,7 @@ export async function _fetchImage(
     builder = builder.height(arToHeight(ar, width));
   }
 
-  const response = await fetch(builder.url());
-  const headers = [...response.headers.keys()];
-  const allowedHeaders = ['content-type', 'cache-control'];
-
-  for (const key of headers) {
-    if (!allowedHeaders.includes(key)) {
-      response.headers.delete(key);
-    }
-  }
-
-  return response;
+  return builder.url();
 }
 
 function assertValidFormat(
