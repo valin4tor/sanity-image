@@ -32,7 +32,7 @@
   "scripts": {
     "build": "rm -rf dist && microbundle",
     "lint": "tsc && prettier -c src",
-    "prepublishOnly": "npm run lint && npm run build"
+    "prepublishOnly": "bun run lint && bun run build"
   },
   "dependencies": {
     "@sanity/image-url": "^1.0.1",
