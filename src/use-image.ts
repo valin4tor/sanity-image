@@ -1,9 +1,10 @@
-import type { ImageSource } from './types.js';
+import type { ImageSource, SanityConfig } from './types.js';
 import { arToHeight } from './helpers.js';
 import { useEffect, useRef } from 'react';
+import { _getImageUrl } from './fetcher.js';
 
 type UseImageContext = {
-  endpoint: string;
+  sanityConfig: SanityConfig;
   breakpoints: Record<string, string>;
 };
 
@@ -17,9 +18,10 @@ export function _useImage(
   this: UseImageContext,
   { source, twSizes, ar }: UseImageParams,
 ) {
-  const { endpoint, breakpoints } = this;
+  const { sanityConfig, breakpoints } = this;
   const { _id, altText: alt } = source;
   const base64 = source.base64[ar ?? 'null'];
+  const getImageUrl = _getImageUrl.bind({ sanityConfig });
 
   const { x: fpX, y: fpY } = source.hotspot ?? {};
   const fp = source.hotspot && `${fpX},${fpY}`;
@@ -32,20 +34,19 @@ export function _useImage(
   const widths = devicePixelRatios(baseWidths);
 
   const params = createParams({ w: defaultWidth, ar, fp, fm: 'jpg' });
-  const baseSrc = `${endpoint}/${_id}`;
-  const src = `${baseSrc}?${params}`;
+  const src = getImageUrl(_id, params);
 
   const jpegs = widths
     .map((width) => {
       const params = createParams({ w: width, ar, fp, fm: 'jpg' });
-      return `${baseSrc}?${params} ${width}w`;
+      return `${getImageUrl(_id, params)} ${width}w`;
     })
     .join(', ');
 
   const webps = widths
     .map((width) => {
       const params = createParams({ w: width, ar, fp, fm: 'webp' });
-      return `${baseSrc}?${params} ${width}w`;
+      return `${getImageUrl(_id, params)} ${width}w`;
     })
     .join(', ');
 
@@ -55,8 +56,8 @@ export function _useImage(
 
   const ref = useRef<HTMLImageElement>(null);
   useEffect(() => {
-    const image = ref.current!;
-    if (image.complete) return; // skip loaded images
+    const image = ref.current;
+    if (!image || image.complete) return; // skip loaded images
 
     image.style.opacity = '0';
     const listener = () => {

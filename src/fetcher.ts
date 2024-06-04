@@ -4,7 +4,6 @@ import imageUrlBuilder from '@sanity/image-url';
 
 type FetchImageContext = {
   sanityConfig: SanityConfig;
-  validAspects: (string | null)[];
 };
 
 export function _getImageUrl(
@@ -12,7 +11,7 @@ export function _getImageUrl(
   imageID: string,
   params: URLSearchParams,
 ) {
-  const { sanityConfig, validAspects } = this;
+  const { sanityConfig } = this;
 
   const w = params.get('w');
   const ar = params.get('ar');
@@ -24,14 +23,6 @@ export function _getImageUrl(
     throw TypeError('invalid width');
   } else {
     width = parseInt(w);
-  }
-
-  if (width > 6400) {
-    throw TypeError('invalid width');
-  }
-
-  if (!validAspects.includes(ar)) {
-    throw TypeError('invalid aspect ratio');
   }
 
   assertValidFormat(['jpg', 'webp'], fm);

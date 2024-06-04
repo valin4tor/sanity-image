@@ -7,5 +7,4 @@ export const IMG_SOURCE = groq`
 
 export { _useImage } from './use-image.js';
 export { _augment } from './augment.js';
-export { _getImageUrl } from './fetcher.js';
 export type { ImageSource, SanityConfig } from './types.js';
